@@ -10,7 +10,6 @@
 # Quantum Computing Laboratory (quantum.pknu.ac.kr)
 #############################################################
 
-from multiprocessing import Process, Manager
 from configparser import ConfigParser
 from rr_qram import RRQram
 
@@ -100,6 +99,10 @@ class RRQramSim:
             str_buf += str(qram_list[i]) + '\n'
 
         return str_buf
+
+#############################################################
+# Main for the RR-QRAM simulator
+#############################################################
 
 if __name__ == '__main__':
 
