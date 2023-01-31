@@ -31,7 +31,7 @@ A simulator for redundant repair of QRAM
 </code>
 </pre>
 
-2. You can modify the number of iterations and the QRAMs to be simulated: rr_qram_sim.py.
+2. You can modify the number of iterations and the number of QRAMs to be simulated: rr_qram_sim.py.
 
 <pre>
 <code>
