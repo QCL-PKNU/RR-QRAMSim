@@ -40,7 +40,7 @@ class RRQram:
 
         # the number of physical qubits of the data and redundant qubits
         self.__dq_qec_npq = int(default_config['dq_qec_npq'])
-        self.__dq_qec_npq = int(default_config['rq_qec_npq'])
+        self.__rq_qec_npq = int(default_config['rq_qec_npq'])
 
         # QEC distance of data and redundant qubits
         self.__dq_qec_dist = int(default_config['dq_qec_dist'])
@@ -48,7 +48,7 @@ class RRQram:
 
         # QEC model of data and redundant qubits
         self.__dq_qec_model = QecModel(self.__dq_qec_npq, self.__dq_qec_dist)
-        self.__rq_qec_model = QecModel(self.__dq_qec_npq, self.__rq_qec_dist)
+        self.__rq_qec_model = QecModel(self.__rq_qec_npq, self.__rq_qec_dist)
 
         # initialize data and redundant qubits
         for i in range(self.__dq_num):
