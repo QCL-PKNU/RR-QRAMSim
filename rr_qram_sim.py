@@ -44,6 +44,13 @@ class RRQramSim:
         self.__config = ConfigParser()
         self.__config.read(path)
 
+        # default configuration of the QRAM simulation
+        default_config = self.__config['DEFAULT']
+
+        # fabrication error rate of data and redundant qubits
+        self.dq_err_rate: float = float(default_config['dq_err_rate'])
+        self.rq_err_rate: float = float(default_config['rq_err_rate'])
+
     ##
     # Destructor of RRQramSim class
     #
@@ -61,13 +68,6 @@ class RRQramSim:
     #
     def simulate_error(self, num_qrams: int):
 
-        # default configuration of the QRAM simulation
-        default_config = self.__config['DEFAULT']
-
-        # fabrication error rate of data and redundant qubits
-        dq_err_rate: float = float(default_config['dq_err_rate'])
-        rq_err_rate: float = float(default_config['rq_err_rate'])
-
         # the number of QRAMs not to be repaired
         num_faulty_qram: int = 0
 
@@ -80,10 +80,41 @@ class RRQramSim:
             self.rr_qram_list.append(qram)
 
             # error simulation on the RR-QRAM
-            if qram.simulate_error(dq_err_rate, rq_err_rate):
+            if qram.simulate_error(self.dq_err_rate, self.rq_err_rate):
                 num_faulty_qram += 1
 
         return num_faulty_qram
+
+    ##
+    # This is a function to print out the brief configuration of the simulated RR-QRAM.
+    #
+    # @param self this object
+    #
+    def print_config(self):
+        # default configuration of the QRAM simulation
+        default_config = self.__config['DEFAULT']
+
+        # print out the simulation configuration briefly
+        dq_qec_npq = int(default_config['dq_qec_npq'])
+        rq_qec_npq = int(default_config['dq_qec_npq'])
+
+        dq_qec_dist = int(default_config['dq_qec_dist'])
+        rq_qec_dist = int(default_config['rq_qec_dist'])
+
+        dq_num = int(default_config['dq_num'])
+        rq_num = int(default_config['rq_num'])
+
+        # total number of physical qubits
+        total_pq_num = dq_num * dq_qec_npq + rq_num * rq_qec_npq
+
+        print('1) QEC Dist.(Size) of Data Qubits: {0} ({1})'.format(dq_qec_dist, dq_qec_npq))
+        print('2) QEC Dist.(Size) of Redundant Qubits: {0} ({1})'.format(rq_qec_dist, rq_qec_npq))
+        print('3) Number of Data Qubits: ', dq_num)
+        print('4) Number of Redundant Qubits: ', rq_num)
+        print('5) Error Rate of Data Qubits: ', float(default_config['dq_err_rate']))
+        print('6) Error Rate of Redundant Qubits: ', float(default_config['rq_err_rate']))
+        print('7) Total Number of Physical Qubits (QEC Size x # Logical Qubits): ', total_pq_num)
+        print()
 
     ##
     # This is a debugging function to return the information of the QRAM simulation as a string format.
@@ -115,10 +146,13 @@ if __name__ == '__main__':
     # the sum of yield
     sum_of_yield: float = 0.0
 
-    for i in range(num_iter):
-        # simulator initialization
-        rr_qram_sim: RRQramSim = RRQramSim('config.ini')
+    # simulator initialization
+    rr_qram_sim: RRQramSim = RRQramSim('config.ini')
 
+    # print out the simulator's configuration
+    rr_qram_sim.print_config()
+
+    for i in range(num_iter):
         # simulate error on the qrams
         num_faulty_qram = rr_qram_sim.simulate_error(num_qram)
 
@@ -127,10 +161,7 @@ if __name__ == '__main__':
         sum_of_yield += yield_qram
 
         # just for debugging
-        print('[{0:02d}] Yield: {1:5.2f}%'.format(i, yield_qram))
-        #print(rr_qram_sim)
+        print('[{0:02d}] Yield (%): {1:5.2f}'.format(i, yield_qram))
 
-        # delete the previous QRAM simulation
-        del rr_qram_sim
-
-    print('>> Average yield: {0:5.2f}%'.format(sum_of_yield/num_iter))
+    # average yield of the repeated simulations
+    print('>> Average yield (%): {0:5.2f}'.format(sum_of_yield/num_iter))
