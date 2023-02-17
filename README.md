@@ -46,10 +46,13 @@ if __name__ == '__main__':
     # the sum of yield
     sum_of_yield: float = 0.0
 
-    for i in range(num_iter):
-        # simulator initialization
-        rr_qram_sim: RRQramSim = RRQramSim('config.ini')
+    # simulator initialization
+    rr_qram_sim: RRQramSim = RRQramSim('config.ini')
 
+    # print out the simulator's configuration
+    rr_qram_sim.print_config()
+
+    for i in range(num_iter):
         # simulate error on the qrams
         num_faulty_qram = rr_qram_sim.simulate_error(num_qram)
 
@@ -58,12 +61,9 @@ if __name__ == '__main__':
         sum_of_yield += yield_qram
 
         # just for debugging
-        print('[{0:02d}] Yield: {1:5.2f}%'.format(i, yield_qram))
-        #print(rr_qram_sim)
+        print('[{0:02d}] Yield (%): {1:5.2f}'.format(i, yield_qram))
 
-        # delete the previous QRAM simulation
-        del rr_qram_sim
-
-    print('>> Average yield: {0:5.2f}%'.format(sum_of_yield/num_iter))
+    # average yield of the repeated simulations
+    print('>> Average yield (%): {0:5.2f}'.format(sum_of_yield/num_iter))
 </code>
 </pre>
