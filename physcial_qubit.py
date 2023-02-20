@@ -36,8 +36,8 @@ class PhysicalQubit:
     #
     def simulate_error(self, err_rate: float = 0.0):
 
-        # physical qubit state
-        self.fault_state = random.random() < err_rate
+        # fault occurrence with binomial random distribution
+        self.fault_state = random.choices([0, 1], weights=[1-err_rate, err_rate])[0]
         return self.fault_state
 
     ##
