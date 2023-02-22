@@ -11,7 +11,6 @@
 #############################################################
 
 from configparser import ConfigParser
-from qec_model import QecModel
 from logical_qubit import LogicalQubit
 
 #############################################################
@@ -31,34 +30,18 @@ class RRQram:
         self.__dq_list = []
         self.__rq_list = []
 
-        # default configuration
-        default_config = config['DEFAULT']
-
-        # the number of data and redundant qubits
-        self.__dq_num = int(default_config['dq_num'])
-        self.__rq_num = int(default_config['rq_num'])
-
-        # the number of physical qubits of the data and redundant qubits
-        self.__dq_qec_npq = int(default_config['dq_qec_npq'])
-        self.__rq_qec_npq = int(default_config['rq_qec_npq'])
-
-        # QEC distance of data and redundant qubits
-        self.__dq_qec_dist = int(default_config['dq_qec_dist'])
-        self.__rq_qec_dist = int(default_config['rq_qec_dist'])
-
-        # QEC model of data and redundant qubits
-        self.__dq_qec_model = QecModel(self.__dq_qec_npq, self.__dq_qec_dist)
-        self.__rq_qec_model = QecModel(self.__rq_qec_npq, self.__rq_qec_dist)
-
         # initialize data and redundant qubits
-        for i in range(self.__dq_num):
-            self.__dq_list.append(LogicalQubit(self.__dq_qec_model))
+        for i in range(config.dq_num):
+            self.__dq_list.append(LogicalQubit(config.dq_qec_model))
 
-        for i in range(self.__rq_num):
-            self.__rq_list.append(LogicalQubit(self.__rq_qec_model))
+        for i in range(config.rq_num):
+            self.__rq_list.append(LogicalQubit(config.rq_qec_model))
 
         # fault occurrence of a logical qubit
         self.fault_state = False
+
+        # simulation configuration
+        self.config = config
 
     ##
     # Destructor of RRQram class
@@ -96,7 +79,7 @@ class RRQram:
                 num_rq_faults += 1
 
         # the number of data qubits to be repaired
-        num_repairable = self.__rq_num - num_rq_faults
+        num_repairable = self.config.rq_num - num_rq_faults
 
         # check the possibility of the recovery of the faulty QRAM
         self.fault_state = (num_dq_faults > num_repairable)
@@ -110,10 +93,10 @@ class RRQram:
     def __str__(self):
         str_buf: str = ''
 
-        for i in range(self.__dq_num):
+        for i in range(self.config.dq_num):
             str_buf += '[{0:04d}] data {1}\n'.format(i, self.__dq_list[i])
 
-        for i in range(self.__rq_num):
+        for i in range(self.config.rq_num):
             str_buf += '[{0:04d}] redundant {1}\n'.format(i, self.__rq_list[i])
 
         return str_buf
